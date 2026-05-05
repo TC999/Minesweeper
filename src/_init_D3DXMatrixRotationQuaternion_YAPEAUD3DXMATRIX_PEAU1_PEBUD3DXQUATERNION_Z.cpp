@@ -1,0 +1,6 @@
+struct D3DXMATRIX *__fastcall init_D3DXMatrixRotationQuaternion(struct D3DXMATRIX *a1, const struct D3DXQUATERNION *a2)
+{
+  D3DXCheckNewDelete();
+  D3DXCpuOptimizations(1);
+  return off_1000A67A8(a1, a2);
+}

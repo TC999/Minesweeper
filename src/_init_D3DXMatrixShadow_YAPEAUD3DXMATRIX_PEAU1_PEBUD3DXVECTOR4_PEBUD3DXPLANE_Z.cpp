@@ -1,0 +1,9 @@
+struct D3DXMATRIX *__fastcall init_D3DXMatrixShadow(
+        struct D3DXMATRIX *a1,
+        const struct D3DXVECTOR4 *a2,
+        const struct D3DXPLANE *a3)
+{
+  D3DXCheckNewDelete();
+  D3DXCpuOptimizations(1);
+  return off_1000A6750(a1, a2, a3);
+}
