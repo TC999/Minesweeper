@@ -12,7 +12,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
 # Find required packages
 find_package(OpenGL REQUIRED)
 
-# Add only the main source file
+# Add source files
 set(SOURCES src/main.cpp)
 
 # Create executable
