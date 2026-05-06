@@ -41,7 +41,7 @@ void DestroyGameBoard(GameBoard* board);
 void PlaceMines(GameBoard* board);
 void CalculateNumbers(GameBoard* board);
 void StartNewGame(GameBoard* board);
-void ClickTile(GameBoard* board, int x, int y, int rightClick);
+void ClickTile(GameBoard* board, int x, int y, int rightClick, HWND hwnd);
 void RevealTile(GameBoard* board, int x, int y);
 void RevealEmptyArea(GameBoard* board, int x, int y);
 int CheckWin(GameBoard* board);
@@ -157,7 +157,10 @@ void Reset(GameBoard* board) {
     }
 }
 
-void ClickTile(GameBoard* board, int x, int y, int rightClick) {
+void ClickTile(GameBoard* board, int x, int y, int rightClick, HWND hwnd) {
+    extern HWND g_hwnd;
+    extern UINT_PTR g_timerId;
+    
     if (x < 0 || x >= board->width || y < 0 || y >= board->height) return;
     if (board->state == WON || board->state == LOST) return;
     if (board->tiles[y][x] == REVEALED) return;
@@ -194,8 +197,18 @@ void ClickTile(GameBoard* board, int x, int y, int rightClick) {
                 }
             }
         }
+        // Stop timer when game is lost
+        if (g_timerId) {
+            KillTimer(g_hwnd, g_timerId);
+            g_timerId = 0;
+        }
     } else if (CheckWin(board)) {
         board->state = WON;
+        // Stop timer when game is won
+        if (g_timerId) {
+            KillTimer(g_hwnd, g_timerId);
+            g_timerId = 0;
+        }
     }
 }
 
@@ -364,7 +377,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                         g_timerId = SetTimer(hwnd, 1, 1000, NULL);
                     }
                     
-                    ClickTile(g_board, x, y, uMsg == WM_RBUTTONDOWN);
+                    ClickTile(g_board, x, y, uMsg == WM_RBUTTONDOWN, hwnd);
                     InvalidateRect(hwnd, NULL, TRUE);
                 }
             }
@@ -372,7 +385,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         }
         
         case WM_TIMER:
-            if (wParam == 1) {
+            if (wParam == 1 && g_board && g_board->state == PLAYING) {
                 g_gameTime++;
                 InvalidateRect(hwnd, NULL, TRUE);
             }
